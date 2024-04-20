@@ -15,6 +15,7 @@ def display_menu():
     print("add  - Add a movie")
     print("del  - Delete a movie")
     print("exit - Exit program")
+    print("min - Max Running Time")
     print()    
 
 def display_categories():
@@ -71,6 +72,9 @@ def delete_movie():
 
     # get movie object for specified id
     movie = db.get_movie(movie_id)
+    if movie is None:
+        print("Couldn't find movie with movie id ",str(movie_id))
+        return
     confirm = input("Are you sure you want to delete '{}'? (y/n): ".format(movie.name))
     if confirm.lower() == 'y':
         db.delete_movie(movie_id)
@@ -79,7 +83,23 @@ def delete_movie():
         print("Delete operation cancelled.")
 
 def display_movies_by_minutes():
-    pass
+    '''
+    6. In the ui module, add a display_movies_by_minutes()
+    function that calls the
+    get_int() function to get the maximum number of minutes from 
+    the user and displays
+    all selected movies. This should sort the movies by minutes 
+    in ascending order.
+    ''' 
+    max_time = int(input("Maximum number of minutes: "))
+    print("MOVIES - LESS THAN {} MINUTES".format(max_time))
+    result = db.get_movies_by_minutes(max_time)
+    print("{:<4}{:<30}{:<8}{:<8}{:<10}".format("ID","Name","Year","Mins","Category"))
+    print("-"*60)
+    for movie in result:
+        print("{:<4}{:<30}{:<8}{:<8}{:<10}".format(
+            str(movie.id),str(movie.name),str(movie.year),str(movie.minutes),str(movie.category.name))
+            )
 
 def main():
     db.connect()

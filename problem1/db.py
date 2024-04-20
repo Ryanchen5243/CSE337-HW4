@@ -18,10 +18,6 @@ def connect():
             print("Linux")
             HOME = os.environ["HOME"]
             DB_FILE = "movies.sqlite"
-
-        ''' to remove later'''
-        DB_FILE = ":memory:"
-        ''' end to remove later'''
         
         conn = sqlite3.connect(DB_FILE)
         conn.row_factory = sqlite3.Row
@@ -85,9 +81,6 @@ def get_categories():
         c.execute(query)
         results = c.fetchall()
 
-        '''testing ehrere'''
-        print(results)
-
     categories = []
     for row in results:
         categories.append(make_category(row))
@@ -149,7 +142,7 @@ def delete_movie(movie_id):
     with closing(conn.cursor()) as c:
         c.execute(sql, (movie_id,))
         test = conn.commit()
-        print("Test", test)
+        # print("Test", test)
 
 def get_movie(movie_id):
     with closing(conn.cursor()) as c:
@@ -162,10 +155,15 @@ def get_movie(movie_id):
         result = c.fetchone()
         return make_movie(result) if result else None
 
-def get_movies_by_minutes():
-    '''
-    5. In the db module, add a get_movies_by_minutes() function that gets a list of Movie
-objects that have a running time that's less than the number of minutes passed to it as
-an argument.
-    '''
-    pass
+def get_movies_by_minutes(max_time):
+    with closing(conn.cursor()) as c:
+        c.execute('''
+            SELECT Movie.*, Category.name as categoryName 
+            FROM Movie INNER JOIN Category ON Movie.categoryID
+                  = Category.categoryID
+            WHERE Movie.minutes < ?
+            ORDER BY Movie.minutes ASC
+                  ''',(max_time,))
+        result = c.fetchall()
+        result = [make_movie(movie) for movie in result]
+        return result
