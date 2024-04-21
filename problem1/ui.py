@@ -78,7 +78,7 @@ def delete_movie():
     confirm = input("Are you sure you want to delete '{}'? (y/n): ".format(movie.name))
     if confirm.lower() == 'y':
         db.delete_movie(movie_id)
-        print("Movie ID " + str(movie_id) + " was deleted from database.\n")
+        print("'{}' was deleted from database.\n".format(str(movie.name)))
     else:
         print("Delete operation cancelled.")
 
