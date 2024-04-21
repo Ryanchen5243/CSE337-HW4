@@ -24,44 +24,54 @@ def connect():
 
 def initialize_database():
     with closing(conn.cursor()) as c:
-        # create category table
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS Category(
-                categoryID INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
-            )
-        ''')
-        c.execute('''
-            INSERT INTO Category (name) VALUES (?)
-        ''', ('Animation',))
-        c.execute('''
-            INSERT INTO Category (name) VALUES (?)
-        ''', ('Comedy',))
-        c.execute('''
-            INSERT INTO Category (name) VALUES (?)
-        ''', ('History',))
+        try:
+            conn.execute('BEGIN') # begin transaction
+            # check if category table exists
+            c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name = 'Category'")
+            res=c.fetchone()
+            if res is None:
+                c.execute('''
+                    CREATE TABLE IF NOT EXISTS Category(
+                        categoryID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL
+                    )
+                ''')
+                categories = ["Animation", "Comedy","History"]
+                for category in categories:
+                    c.execute('''
+                        INSERT INTO Category (name) VALUES (?)
+                    ''', (category,))
 
-        # create Movie table
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS Movie(
-                movieID INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                year INTEGER NOT NULL,
-                minutes INTEGER NOT NULL,
-                categoryID INTEGER NOT NULL
-            )
-        ''')
-        
-        c.execute('''INSERT INTO Movie (name, year, minutes, categoryID) VALUES (?,?,?,?)''',
-                  ("John doe",2012,87,1))
-        c.execute('''INSERT INTO Movie (name, year, minutes, categoryID) VALUES (?,?,?,?)''',
-            ("The epic story of my hero",1999,120,2))
-        c.execute('''INSERT INTO Movie (name, year, minutes, categoryID) VALUES (?,?,?,?)''',
-            ("Who even knows? 199",2000,63,1))
-        c.execute('''INSERT INTO Movie (name, year, minutes, categoryID) VALUES (?,?,?,?)''',
-            ("Good ending.",1989,68,3))
 
-        conn.commit()
+            c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name = 'Movie'")
+            res = c.fetchone()
+            if res is None:
+                # create Movie table
+                c.execute('''
+                    CREATE TABLE IF NOT EXISTS Movie(
+                        movieID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        year INTEGER NOT NULL,
+                        minutes INTEGER NOT NULL,
+                        categoryID INTEGER NOT NULL
+                    )
+                ''')
+                
+                movies = [
+                    ("John doe",2012,87,1),
+                    ("The epic story of my hero",1999,120,2),
+                    ("Who even knows?",2000,63,1),
+                    ("Good ending.",1989,68,3)
+                ]
+
+                for m in movies:
+                    c.execute('''
+                        INSERT INTO Movie (name, year, minutes, categoryID) 
+                        VALUES (?,?,?,?)''',m)
+            conn.commit()
+        except sqlite3.Error as e:
+            conn.rollback()
+            print("error -> transaction rolled back - ",e )
 
 def close():
     if conn:
