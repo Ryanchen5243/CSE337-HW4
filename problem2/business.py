@@ -76,9 +76,9 @@ class FutureValueFrame(ttk.Frame):
 
         # Add two buttons to the button frame
         ttk.Button(buttonFrame, text="Calculate", command=self.calculate) \
-            .grid(column=0, row=0, padx=5)
-        ttk.Button(buttonFrame, text="Exit", command=self.parent.destroy) \
-            .grid(column=1, row=0)
+            .grid(column=1, row=0, padx=5)
+        ttk.Button(buttonFrame, text="Clear", command=self.clearFields) \
+            .grid(column=0, row=0)
 
     def calculate(self):
         self.investment.monthlyInvestment = float(
@@ -90,20 +90,34 @@ class FutureValueFrame(ttk.Frame):
 
         self.futureValue.set(locale.currency(
                 self.investment.calculateFutureValue(), grouping=True))
+    
+    def clearFields(self):
+        self.monthlyInvestment.set("")
+        self.yearlyInterestRate.set("")
+        self.years.set("")
+        self.futureValue.set("")
 
 def configureTwoFutureValueFrames(parent):
     # create left and right frames and store FutureValueFrames in each
-    leftFrame=tk.Frame(parent)
-    leftFrame.pack(side=tk.LEFT)
-    rightFrame=tk.Frame(parent)
-    rightFrame.pack(side=tk.RIGHT)
-    FutureValueFrame(leftFrame)
-    FutureValueFrame(rightFrame)
+    topFrame=tk.Frame(parent)
+    topFrame.pack(side=tk.TOP)
+    botFrame=tk.Frame(parent)
+    botFrame.pack(side=tk.BOTTOM,fill=tk.X,padx=5, pady=3,expand=True)
+
+    leftTopFrame=tk.Frame(topFrame)
+    leftTopFrame.pack(side=tk.LEFT)
+    rightTopFrame=tk.Frame(topFrame)
+    rightTopFrame.pack(side=tk.RIGHT)
+    FutureValueFrame(leftTopFrame)
+    FutureValueFrame(rightTopFrame)
+
+    exitButtonWidget = tk.Button(botFrame,text="Exit",command=parent.destroy)
+    exitButtonWidget.pack(side=tk.RIGHT)
+
 
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Future Value Calculator")
-    # FutureValueFrame(root)
     configureTwoFutureValueFrames(root)
     root.mainloop()
