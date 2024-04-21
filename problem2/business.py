@@ -2,8 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 import locale
 
-# from business import Investment
-
 class Investment():
     def __init__(self):
         self.monthlyInvestment = 0
@@ -93,8 +91,19 @@ class FutureValueFrame(ttk.Frame):
         self.futureValue.set(locale.currency(
                 self.investment.calculateFutureValue(), grouping=True))
 
+def configureTwoFutureValueFrames(parent):
+    # create left and right frames and store FutureValueFrames in each
+    leftFrame=tk.Frame(parent)
+    leftFrame.pack(side=tk.LEFT)
+    rightFrame=tk.Frame(parent)
+    rightFrame.pack(side=tk.RIGHT)
+    FutureValueFrame(leftFrame)
+    FutureValueFrame(rightFrame)
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Future Value Calculator")
-    FutureValueFrame(root)
+    # FutureValueFrame(root)
+    configureTwoFutureValueFrames(root)
     root.mainloop()
