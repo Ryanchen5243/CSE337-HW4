@@ -100,9 +100,9 @@ class FutureValueFrame(ttk.Frame):
 def configureTwoFutureValueFrames(parent):
     # create left and right frames and store FutureValueFrames in each
     topFrame=tk.Frame(parent)
-    topFrame.pack(side=tk.TOP)
+    topFrame.pack(side=tk.TOP,fill=tk.BOTH,expand=True)
     botFrame=tk.Frame(parent)
-    botFrame.pack(side=tk.BOTTOM,fill=tk.X,padx=5, pady=3,expand=True)
+    botFrame.pack(side=tk.BOTTOM,fill=tk.X,padx=5,pady=5)
 
     leftTopFrame=tk.Frame(topFrame)
     leftTopFrame.pack(side=tk.LEFT)
@@ -111,7 +111,7 @@ def configureTwoFutureValueFrames(parent):
     FutureValueFrame(leftTopFrame)
     FutureValueFrame(rightTopFrame)
 
-    exitButtonWidget = tk.Button(botFrame,text="Exit",command=parent.destroy)
+    exitButtonWidget = ttk.Button(botFrame,text="Exit",command=parent.destroy)
     exitButtonWidget.pack(side=tk.RIGHT)
 
 
